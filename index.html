@@ -4,95 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Mass Timber LHS Engine</title>
+    <title>Mass Timber Golden Master LHS Matrix Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
-<body class="bg-slate-900 p-4 min-h-screen text-slate-100 font-sans">
+<body class="bg-slate-950 p-6 min-h-screen text-slate-100 font-sans">
 
-    <div class="max-w-2xl mx-auto bg-slate-800 p-6 rounded-2xl shadow-2xl border border-slate-700 mt-4">
-        <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-6">
-            <div>
-                <h1 class="text-2xl font-black tracking-tight text-emerald-400">Global Timber Connection LHS Engine</h1>
-                <p class="text-xs text-slate-400">Advanced Multi-Code & Supplier Dependency Matrix</p>
-            </div>
-            <span
-                class="bg-slate-700 text-emerald-400 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-500/30">V2.6</span>
-        </div>
+    <div class="max-w-6xl mx-auto bg-slate-900 p-6 rounded-2xl shadow-2xl border border-slate-800">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div
+            class="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-4 mb-6">
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Design Code
-                    Jurisdiction</label>
-                <select id="designCode"
-                    class="w-full bg-slate-700 border border-slate-600 p-2.5 rounded-lg text-sm focus:outline-none focus:border-emerald-500">
-                    <option value="EC5">EN 1995:2025 (Eurocode 5)</option>
-                    <option value="NDS">NDS 2024 (United States)</option>
-                    <option value="CSA">CSA O86 (Canada)</option>
-                    <option value="AS1720">AS 1720.1 (Australia)</option>
-                    <option value="AZS">AZS / KMK (Azerbaijan)</option>
-                </select>
+                <h1 class="text-2xl font-black text-emerald-400 tracking-tight flex items-center gap-2">
+                    Universal Mass Timber LHS Engine <span
+                        class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Golden
+                        Master JS Engine v2.0</span>
+                </h1>
+                <p class="text-xs text-slate-400">Cross-dependent multi-code simulation (EN1995 / AS1720 / NDS / CSA
+                    O86)</p>
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Substrate Material
-                    Base</label>
-                <select id="materialType"
-                    class="w-full bg-slate-700 border border-slate-600 p-2.5 rounded-lg text-sm focus:outline-none focus:border-emerald-500">
-                    <option value="GL24h">Glulam GL24h / D.Fir-L</option>
-                    <option value="GL30h">Glulam GL30h / Premium Spruce</option>
-                    <option value="CLT">CLT Panel Layer (Spruce-Pine-Fir)</option>
-                </select>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <button onclick="runGoldenMasterLHS()"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-950/40 cursor-pointer uppercase tracking-wider">
+                    Generate Matrix
+                </button>
+                <button id="downloadBtn" onclick="exportToExcel()" disabled
+                    class="bg-slate-800 border border-slate-700 text-slate-400 px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-not-allowed uppercase tracking-wider flex items-center gap-2">
+                    📥 Download Excel
+                </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Fastener
-                    Supplier</label>
-                <select id="supplier"
-                    class="w-full bg-slate-700 border border-slate-600 p-2.5 rounded-lg text-sm focus:outline-none focus:border-emerald-500"
-                    onchange="updateProductFamily()">
-                    <option value="Rothoblaas">Rothoblaas (Italy)</option>
-                    <option value="SFS">SFS Intec (Switzerland)</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Product Family
-                    Specification</label>
-                <select id="productFamily"
-                    class="w-full bg-slate-700 border border-slate-600 p-2.5 rounded-lg text-sm focus:outline-none focus:border-emerald-500"></select>
-            </div>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <div class="mb-6">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Latin Hypercube Sample
-                Stratifications (N)</label>
-            <input id="sampleCount" type="number" value="100" min="10" max="1000"
-                class="w-full bg-slate-700 border border-slate-600 p-2.5 rounded-lg text-sm focus:outline-none focus:border-emerald-500 text-white font-mono">
-        </div>
+            <div class="bg-slate-850 p-4 rounded-xl border border-slate-800/60 space-y-4 h-fit">
+                <h2 class="text-xs font-bold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-1.5">
+                    Engine Configuration</h2>
 
-        <button onclick="runStructuralLHS()"
-            class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold text-sm hover:bg-emerald-500 transition shadow-lg shadow-emerald-900/30 cursor-pointer uppercase tracking-wider">
-            Execute Multi-Code Simulation
-        </button>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Target Valid Scenarios (Rows)</label>
+                    <input id="targetScenarios" type="number" value="50"
+                        class="w-full bg-slate-800 border border-slate-700 p-2 rounded text-sm text-white font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">LHS Initial Population Size</label>
+                    <input id="initialPop" type="number" value="500"
+                        class="w-full bg-slate-800 border border-slate-700 p-2 rounded text-sm text-white font-mono">
+                    <span class="text-[10px] text-slate-500">Oversampling space to process conditional validation
+                        drops.</span>
+                </div>
 
-        <div class="mt-6 p-4 bg-slate-850 rounded-xl border border-slate-700 hidden" id="resultContainer">
-            <h3 class="font-bold text-xs uppercase tracking-widest text-slate-400 mb-3">LHS Density Stratification
-                Profile:</h3>
-            <div class="w-full h-56 mb-4">
-                <canvas id="myLhsChart"></canvas>
+                <div id="statsSummary"
+                    class="hidden p-3 bg-slate-900 rounded-lg border border-slate-800 font-mono text-xs text-slate-400 space-y-1">
+                </div>
             </div>
-            <h3 class="font-bold text-xs uppercase tracking-widest text-slate-400 mb-1">Engineering Limit State Reports:
-            </h3>
-            <p id="outputSummary"
-                class="text-xs text-slate-300 bg-slate-900 p-3 rounded-xl border border-slate-750 font-mono leading-relaxed whitespace-pre-line">
-            </p>
+
+            <div class="lg:col-span-2 space-y-4">
+                <h2 class="text-xs font-bold text-slate-300 uppercase tracking-widest border-b border-slate-800 pb-1.5">
+                    Realtime Cross-Dependency Verification Matrix</h2>
+
+                <div id="placeholderText"
+                    class="text-center text-slate-500 py-24 border border-dashed border-slate-800 rounded-xl text-sm">
+                    Awaiting calculation pipeline initialization. Click "Generate Matrix" to execute Latin Hypercube
+                    permutation passes.
+                </div>
+
+                <div id="matrixContainer"
+                    class="hidden w-full overflow-x-auto border border-slate-800 rounded-xl bg-slate-950 max-h-96">
+                    <table class="w-full text-left font-mono text-xs whitespace-nowrap border-collapse">
+                        <thead class="bg-slate-850 text-slate-400 border-b border-slate-800 sticky top-0 z-10">
+                            <tr id="tableHeaderRow">
+                            </tr>
+                        </thead>
+                        <tbody id="tableBodyRow" class="text-slate-300 divide-y divide-slate-900">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script src="calculator.js"></script>
-    <script>window.onload = function () { updateProductFamily(); };</script>
 </body>
 
 </html>
